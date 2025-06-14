@@ -4,10 +4,12 @@ const app = express();
 const User = require("./models/user");
 const { validateSignupData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
+const validator = require("validator");
 
 app.use(express.json());
 
 // Signup API - Register a new user
+
 app.post("/signup", async (req, res) => {
   try {
     //  Vaidation of data
@@ -26,7 +28,7 @@ app.post("/signup", async (req, res) => {
     } = req.body;
 
     //  Encrypt the password
-    const passwordHash = bcrypt.hash(password, 10);
+    const passwordHash = await bcrypt.hash(password, 10);
 
     const user = new User({
       firstName,
@@ -44,16 +46,17 @@ app.post("/signup", async (req, res) => {
       "firstName",
       "lastName",
       "emailId",
-      "passwword",
+      "password",
       "age",
       "gender",
       "photoUrl",
       "about",
       "skills",
     ];
-    const isValid = Object.keys(user).every((key) =>
+    const isValid = Object.keys(req.body).every((key) =>
       allowedFields.includes(key)
     );
+
     if (!isValid) {
       throw new Error("Invalid fields in request");
     }
@@ -64,6 +67,47 @@ app.post("/signup", async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Error registering user",
+      error: error.message,
+    });
+  }
+});
+
+// Login API
+app.post("/login", async (req, res) => {
+  try {
+    const { emailId, password } = req.body;
+
+    const allowedFields = ["emailId", "password"];
+    const isValid = Object.keys(req.body).every((key) =>
+      allowedFields.includes(key)
+    );
+    if (!isValid) {
+      throw new Error("Invalid fields in request");
+    }
+
+    if (!validator.isEmail(emailId)) {
+      throw new Error("Email is not valid");
+    }
+
+    if (!emailId || !password) {
+      throw new Error("Email and password are required");
+    }
+
+    const user = await User.findOne({ emailId: emailId });
+    if (!user) {
+      throw new Error("Invalid credentials");
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (isPasswordValid) {
+      res.send("Login sucessfull");
+    } else {
+      throw new Error("Invalid credentials");
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "Error logging in",
       error: error.message,
     });
   }
@@ -102,8 +146,8 @@ app.patch("/user/:userId", async (req, res) => {
   const data = req.body;
   try {
     const allowedUpdates = ["about", "skills", "photoUrl", "gender", "age"];
-    const isUpdateAllowed = Object.keys(data).every((k) =>
-      allowedUpdates.includes(k)
+    const isUpdateAllowed = Object.keys(data).every((key) =>
+      allowedUpdates.includes(key)
     );
     if (!isUpdateAllowed) {
       throw new Error("Update not allowed");
