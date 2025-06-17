@@ -7,6 +7,7 @@ const bcrypt = require("bcrypt");
 const validator = require("validator");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
+const { userAuth } = require("./middlewares/auth");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -101,12 +102,11 @@ app.post("/login", async (req, res) => {
       throw new Error("Invalid credentials");
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await user.validatePassword(password);
 
     if (isPasswordValid) {
-      // Generate a JWT token
-      const token = await jwt.sign({ _id: user._id }, "your_secret_key");
-      // send token or wrap token in cookie
+      const token = await user.getJWT();
+
       res.cookie("token", token);
 
       res.send("Login sucessfull");
@@ -122,16 +122,9 @@ app.post("/login", async (req, res) => {
 });
 
 // Profile API
-app.get("/profile", async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
   try {
-    const cookies = req.cookies;
-    const { token } = cookies;
-    // verify the token
-    const decoded = await jwt.verify(token, "your_secret_key");
-    const { _id } = decoded;
-
-    // find the user by id
-    const user = await User.findById(_id);
+    const user = req.user;
     if (!user) {
       throw new Error("User does not exsist");
     }
@@ -139,61 +132,6 @@ app.get("/profile", async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Error fetching profile",
-      error: error.message,
-    });
-  }
-});
-
-// Feed API - Get all users from the database
-app.get("/feed", async (req, res) => {
-  try {
-    const users = await User.find({});
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({
-      message: "Error fetching users",
-      error: error.message,
-    });
-  }
-});
-
-//  Delete a user from the database
-app.delete("/user", async (req, res) => {
-  const userId = req.body.userId;
-  try {
-    const user = await User.findByIdAndDelete(userId);
-    res.status(200).json({ message: "User deleted successfully" });
-  } catch (error) {
-    res.status(500).json({
-      message: "Error deleting user",
-      error: error.message,
-    });
-  }
-});
-
-// update data of the user by userId
-app.patch("/user/:userId", async (req, res) => {
-  const userId = req.params.userId;
-  const data = req.body;
-  try {
-    const allowedUpdates = ["about", "skills", "photoUrl", "gender", "age"];
-    const isUpdateAllowed = Object.keys(data).every((key) =>
-      allowedUpdates.includes(key)
-    );
-    if (!isUpdateAllowed) {
-      throw new Error("Update not allowed");
-    }
-    if (data?.skills.length > 10) {
-      throw new Error("Skills can not be more than 10");
-    }
-    const user = await User.findByIdAndUpdate(userId, data, {
-      new: true,
-      runValidators: true,
-    });
-    res.status(200).json({ message: "User updated successfully", user: user });
-  } catch (error) {
-    res.status(500).json({
-      message: "Error updating user",
       error: error.message,
     });
   }
