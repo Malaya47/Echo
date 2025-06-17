@@ -5,8 +5,11 @@ const User = require("./models/user");
 const { validateSignupData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 app.use(express.json());
+app.use(cookieParser());
 
 // Signup API - Register a new user
 
@@ -101,6 +104,11 @@ app.post("/login", async (req, res) => {
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (isPasswordValid) {
+      // Generate a JWT token
+      const token = await jwt.sign({ _id: user._id }, "your_secret_key");
+      // send token or wrap token in cookie
+      res.cookie("token", token);
+
       res.send("Login sucessfull");
     } else {
       throw new Error("Invalid credentials");
@@ -108,6 +116,29 @@ app.post("/login", async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Error logging in",
+      error: error.message,
+    });
+  }
+});
+
+// Profile API
+app.get("/profile", async (req, res) => {
+  try {
+    const cookies = req.cookies;
+    const { token } = cookies;
+    // verify the token
+    const decoded = await jwt.verify(token, "your_secret_key");
+    const { _id } = decoded;
+
+    // find the user by id
+    const user = await User.findById(_id);
+    if (!user) {
+      throw new Error("User does not exsist");
+    }
+    res.send(user);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching profile",
       error: error.message,
     });
   }
