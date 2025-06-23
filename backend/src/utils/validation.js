@@ -29,7 +29,28 @@ const validateEditProfileData = (req) => {
   return isEditAllowed;
 };
 
+const validatePassowrdData = (req) => {
+  const { currentPassword, newPassword } = req.body;
+
+  if (
+    !validator.isStrongPassword(newPassword) ||
+    !validator.isStrongPassword(currentPassword)
+  ) {
+    throw new Error(
+      "Password is weak and should contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 symbol"
+    );
+  }
+
+  const allowedFields = ["currentPassword", "newPassword"];
+  const isEditAllowed = Object.keys(req.body).every((field) =>
+    allowedFields.includes(field)
+  );
+
+  return isEditAllowed;
+};
+
 module.exports = {
   validateSignupData,
   validateEditProfileData,
+  validatePassowrdData,
 };
