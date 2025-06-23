@@ -55,8 +55,6 @@ profileRouter.patch("/profile/password", userAuth, async (req, res) => {
 
     const loggedInUser = req.user;
 
-    const currentPasswordHash = loggedInUser.password;
-
     const isCurrentPasswordValid = await loggedInUser.validatePassword(
       currentPassword
     );
