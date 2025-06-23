@@ -46,8 +46,7 @@ requestRouter.post(
       await connectionRequest.save();
 
       res.status(200).json({
-        message:
-          "Connection request sent successfully to ${toUser.firstName} ${toUser.lastName}",
+        message: `Connection request sent successfully to ${toUser.firstName} ${toUser.lastName}`,
       });
     } catch (error) {
       res.status(500).json({

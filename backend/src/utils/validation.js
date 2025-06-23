@@ -57,12 +57,12 @@ const validateRequestData = (req) => {
     throw new Error("Invalid Request");
   }
 
-  const allowedFields = ["toUserId", "status"];
-  const isAllowedFields = Object.keys(req.params).every((field) =>
-    allowedFields.includes(field)
-  );
+  const allowedStatus = ["interested", "ignored"];
+  if (!allowedStatus.includes(status)) {
+    throw new Error("Invalid Status");
+  }
 
-  return isAllowedFields;
+  return true;
 };
 
 module.exports = {
