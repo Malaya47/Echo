@@ -49,8 +49,25 @@ const validatePassowrdData = (req) => {
   return isEditAllowed;
 };
 
+const validateRequestData = (req) => {
+  const toUserId = req.params.toUserId;
+  const status = req.params.status;
+
+  if (!toUserId && !status) {
+    throw new Error("Invalid Request");
+  }
+
+  const allowedFields = ["toUserId", "status"];
+  const isAllowedFields = Object.keys(req.params).every((field) =>
+    allowedFields.includes(field)
+  );
+
+  return isAllowedFields;
+};
+
 module.exports = {
   validateSignupData,
   validateEditProfileData,
   validatePassowrdData,
+  validateRequestData,
 };
