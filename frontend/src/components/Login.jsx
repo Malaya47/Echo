@@ -1,6 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
 
 const Login = () => {
+  const [email, setEmail] = useState("malaya@gmail.com");
+  const [password, setPassword] = useState("Password@123");
+
+  const loginHandler = async () => {
+    try {
+      const res = await axios.post(
+        "http://localhost:3000/login",
+        {
+          emailId: email,
+          password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(res);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="mt-4">
       <section className="text-center mb-5">
@@ -12,12 +34,26 @@ const Login = () => {
           <legend className="fieldset-legend">Login</legend>
 
           <label className="label">Email</label>
-          <input type="email" className="input" placeholder="Email" />
+          <input
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
+            type="email"
+            className="input"
+            placeholder="Email"
+          />
 
           <label className="label">Password</label>
-          <input type="password" className="input" placeholder="Password" />
+          <input
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
+            type="password"
+            className="input"
+            placeholder="Password"
+          />
 
-          <button className="btn btn-neutral mt-4">Login</button>
+          <button onClick={loginHandler} className="btn btn-neutral mt-4">
+            Login
+          </button>
         </fieldset>
       </section>
     </div>
