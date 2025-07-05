@@ -1,9 +1,19 @@
 import "./App.css";
+import Body from "./components/Body";
+import Login from "./components/Login";
+import Navbar from "./components/Navbar";
+import { BrowserRouter, Routes, Route } from "react-router";
 
 function App() {
   return (
     <>
-      <h1>hello react</h1>
+      <BrowserRouter basename="/">
+        <Routes>
+          <Route path="/" element={<Body />}>
+            <Route path="/login" element={<Login />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </>
   );
 }
