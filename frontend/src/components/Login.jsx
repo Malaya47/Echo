@@ -3,12 +3,14 @@ import axios from "axios";
 import { BASE_URL } from "../utils/constants";
 import { useDispatch } from "react-redux";
 import { login } from "../utils/userSlice";
+import { useNavigate } from "react-router";
 
 const Login = () => {
   const [email, setEmail] = useState("malaya@gmail.com");
   const [password, setPassword] = useState("Password@123");
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const loginHandler = async () => {
     try {
@@ -23,6 +25,7 @@ const Login = () => {
         }
       );
       dispatch(login(res.data.user));
+      navigate("/");
     } catch (error) {
       console.error(error);
     }
