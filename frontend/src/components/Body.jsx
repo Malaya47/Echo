@@ -6,11 +6,14 @@ import { BASE_URL } from "../utils/constants";
 import { useDispatch } from "react-redux";
 import { login } from "../utils/userSlice";
 import { useNavigate } from "react-router";
+import { useSelector } from "react-redux";
 
 const Body = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const userData = useSelector((state) => state.user);
   const fetchUserData = async () => {
+    if (userData) return;
     try {
       const response = await axios.get(`${BASE_URL}/profile/view`, {
         withCredentials: true,
