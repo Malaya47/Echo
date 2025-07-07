@@ -57,6 +57,8 @@ const userSchema = new mongoose.Schema(
     },
     photoUrl: {
       type: String,
+      default:
+        "https://www.shutterstock.com/image-vector/default-avatar-photo-placeholder-grey-600nw-2007531536.jpg",
       validate(value) {
         if (!validator.isURL(value)) {
           throw new Error("Photo URL is invalid");
