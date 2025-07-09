@@ -23,7 +23,7 @@ const Feed = () => {
     fetchFeed();
   }, []);
 
-  if (feed.length === 0) {
+  if (feed?.length === 0) {
     return <h1>No users found</h1>;
   }
 
