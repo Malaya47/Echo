@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { logout } from "../utils/userSlice";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
 
@@ -50,13 +50,16 @@ const Navbar = () => {
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
             >
               <li>
-                <a className="justify-between">
+                <Link to="/profile" className="justify-between">
                   Profile
                   <span className="badge">New</span>
-                </a>
+                </Link>
               </li>
               <li>
-                <a>Settings</a>
+                <Link to="/connections">Your Connections</Link>
+              </li>
+              <li>
+                <Link to="/requests">Received Requests</Link>
               </li>
               <li>
                 <button onClick={logoutHandler}>Logout</button>
