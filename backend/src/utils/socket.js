@@ -10,8 +10,15 @@ const initializeSocket = (server) => {
   io.on("connection", (socket) => {
     console.log("A user connected");
 
-    socket.on("join", (data) => {
-      console.log(data);
+    socket.on("joinChat", ({ userId, targetUserId }) => {
+      const room = [userId, targetUserId].sort().join("_");
+
+      socket.join(room);
+    });
+
+    socket.on("sendMessage", ({ userId, targetUserId, message }) => {
+      const room = [userId, targetUserId].sort().join("_");
+      io.to(room).emit("receiveMessage", { userId, targetUserId, message });
     });
 
     socket.on("disconnect", () => {
