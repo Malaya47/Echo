@@ -1,68 +1,78 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { createSocketConnection } from "../utils/socket";
+import { useSelector } from "react-redux";
+import { getSocket, disconnectSocket } from "../utils/socket";
 
 const Chat = () => {
-  const { toUserId } = useParams();
+  const { targetUserId } = useParams();
+  const [message, setMessage] = useState("");
+  const [chatMessages, setChatMessages] = useState([
+    // Dummy initial messages
+    { senderId: "dummy1", text: "Hello there!" },
+    { senderId: "dummy2", text: "General Kenobi!" },
+  ]);
+
+  const loggedInUser = useSelector((state) => state.user);
+  const userId = loggedInUser?._id;
 
   useEffect(() => {
-    const socket = createSocketConnection();
+    const socket = getSocket();
+    if (socket && socket.connected) {
+      socket.emit("joinChat", { userId, targetUserId });
 
-    socket.emit("join", { toUserId });
-  }, []);
+      const handleReceiveMessage = ({ userId: senderId, message: text }) => {
+        setChatMessages((prev) => [...prev, { senderId, text }]);
+      };
+
+      socket.on("receiveMessage", handleReceiveMessage);
+
+      return () => {
+        socket.off("receiveMessage", handleReceiveMessage);
+      };
+    }
+  }, [userId, targetUserId]);
+
+  const handleSendMessage = () => {
+    if (!message.trim()) return;
+
+    const socket = getSocket();
+    socket?.emit("sendMessage", {
+      userId,
+      targetUserId,
+      message,
+    });
+
+    setMessage("");
+  };
 
   return (
     <div className="flex flex-col h-screen bg-base-200 p-4">
-      {/* Chat bubbles area */}
+      {/* Chat messages */}
       <div className="flex-1 overflow-y-auto space-y-2">
-        <div className="chat chat-start">
-          <div className="chat-bubble chat-bubble-primary">
-            What kind of nonsense is this
+        {chatMessages.map((msg, index) => (
+          <div
+            key={index}
+            className={`chat ${
+              msg.senderId === userId ? "chat-start" : "chat-end"
+            }`}
+          >
+            <div className="chat-bubble chat-bubble-primary">{msg.text}</div>
           </div>
-        </div>
-        <div className="chat chat-start">
-          <div className="chat-bubble chat-bubble-secondary">
-            Put me on the Council and not make me a Master!??
-          </div>
-        </div>
-        <div className="chat chat-start">
-          <div className="chat-bubble chat-bubble-accent">
-            That's never been done in the history of the Jedi.
-          </div>
-        </div>
-        <div className="chat chat-start">
-          <div className="chat-bubble chat-bubble-neutral">It's insulting!</div>
-        </div>
-        <div className="chat chat-end">
-          <div className="chat-bubble chat-bubble-info">Calm down, Anakin.</div>
-        </div>
-        <div className="chat chat-end">
-          <div className="chat-bubble chat-bubble-success">
-            You have been given a great honor.
-          </div>
-        </div>
-        <div className="chat chat-end">
-          <div className="chat-bubble chat-bubble-warning">
-            To be on the Council at your age.
-          </div>
-        </div>
-        <div className="chat chat-end">
-          <div className="chat-bubble chat-bubble-error">
-            It's never happened before.
-          </div>
-        </div>
+        ))}
       </div>
 
       {/* Input area */}
       <div className="flex items-center gap-2 mt-4">
         <input
           type="text"
-          // value={message}
-          // onChange={(e) => setMessage(e.target.value)}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
           placeholder="Type your message..."
           className="input input-bordered w-full"
         />
-        <button className="btn btn-primary">Send</button>
+        <button onClick={handleSendMessage} className="btn btn-primary">
+          Send
+        </button>
       </div>
     </div>
   );

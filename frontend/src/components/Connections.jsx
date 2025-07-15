@@ -41,8 +41,16 @@ const Connections = () => {
       {connections && connections.length > 0 ? (
         <div className="grid gap-6">
           {connections.map((connection) => {
-            const { firstName, lastName, age, gender, photoUrl, about, _id } =
-              connection;
+            const {
+              firstName,
+              lastName,
+              age,
+              gender,
+              photoUrl,
+              about,
+              _id,
+              status,
+            } = connection;
             return (
               <div
                 key={_id}
@@ -82,6 +90,7 @@ const Connections = () => {
                   >
                     Chat
                   </Link>
+                  <p>{status}</p>
                 </div>
               </div>
             );

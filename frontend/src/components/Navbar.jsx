@@ -5,6 +5,7 @@ import { logout } from "../utils/userSlice";
 import { useNavigate, Link } from "react-router";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
+import { disconnectSocket, getSocket } from "../utils/socket";
 
 const Navbar = () => {
   const user = useSelector((state) => state.user);
@@ -12,15 +13,21 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const logoutHandler = async () => {
-    await axios.post(
-      `${BASE_URL}/logout`,
-      {},
-      {
-        withCredentials: true,
-      }
-    );
-    dispatch(logout());
-    navigate("/login");
+    const socket = getSocket();
+
+    if (socket && socket.connected) {
+      socket.emit("status", { status: "offline", userId: user._id });
+    }
+    disconnectSocket();
+
+    try {
+      await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
+
+      dispatch(logout());
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
   };
 
   return (

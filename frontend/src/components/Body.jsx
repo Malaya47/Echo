@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 import { login } from "../utils/userSlice";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
-
+import { createSocketConnection } from "../utils/socket";
 const Body = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -29,6 +29,7 @@ const Body = () => {
 
   useEffect(() => {
     fetchUserData();
+    const socket = createSocketConnection();
   }, []);
 
   return (

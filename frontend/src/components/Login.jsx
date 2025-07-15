@@ -4,6 +4,7 @@ import { BASE_URL } from "../utils/constants";
 import { useDispatch } from "react-redux";
 import { login } from "../utils/userSlice";
 import { useNavigate } from "react-router";
+import { createSocketConnection } from "../utils/socket";
 
 const Login = () => {
   const [email, setEmail] = useState("malaya@gmail.com");
@@ -25,6 +26,8 @@ const Login = () => {
         }
       );
       dispatch(login(res.data.user));
+      const socket = createSocketConnection();
+      socket.emit("status", { status: "online", userId: res.data.user?._id });
       navigate("/");
     } catch (error) {
       console.error(error);
