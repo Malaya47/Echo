@@ -72,6 +72,11 @@ const userSchema = new mongoose.Schema(
     skills: {
       type: [String],
     },
+    status: {
+      type: String,
+      enum: ["online", "offline"],
+      default: "offline",
+    },
   },
   {
     timestamps: true,
