@@ -1,5 +1,6 @@
 const socket = require("socket.io");
 const User = require("../models/user");
+const Chat = require("../models/chat");
 const initializeSocket = (server) => {
   const io = socket(server, {
     cors: {
@@ -15,9 +16,32 @@ const initializeSocket = (server) => {
       socket.join(room);
     });
 
-    socket.on("sendMessage", ({ userId, targetUserId, message }) => {
-      const room = [userId, targetUserId].sort().join("_");
-      io.to(room).emit("receiveMessage", { userId, targetUserId, message });
+    socket.on("sendMessage", async ({ userId, targetUserId, message }) => {
+      try {
+        const room = [userId, targetUserId].sort().join("_");
+
+        // before emitting save the message to the database
+
+        // first check if the chat already exsists or not
+        let chat = await Chat.findOne({
+          participants: { $all: [userId, targetUserId] },
+        });
+
+        if (!chat) {
+          chat = new Chat({
+            participants: [userId, targetUserId],
+            messages: [],
+          });
+        }
+
+        chat.messages.push({ senderId: userId, text: message });
+
+        await chat.save();
+
+        io.to(room).emit("receiveMessage", { userId, targetUserId, message });
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
     });
 
     socket.on("status", async ({ status, userId }) => {
