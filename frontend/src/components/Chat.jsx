@@ -2,26 +2,50 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { useSelector } from "react-redux";
 import { getSocket } from "../utils/socket";
+import { BASE_URL } from "../utils/constants";
+import axios from "axios";
 
 const Chat = () => {
   const { targetUserId } = useParams();
   const [message, setMessage] = useState("");
-  const [chatMessages, setChatMessages] = useState([
-    // Dummy initial messages
-    { senderId: "dummy1", text: "Hello there!" },
-    { senderId: "dummy2", text: "General Kenobi!" },
-  ]);
+  const [chatMessages, setChatMessages] = useState([]);
 
   const loggedInUser = useSelector((state) => state.user);
   const userId = loggedInUser?._id;
+
+  const fetchChatMessages = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/chats/${targetUserId}`, {
+        withCredentials: true,
+      });
+
+      const messages = response.data.data.messages.map((msg) => ({
+        senderId: msg.senderId._id,
+        text: msg.text,
+        firstName: msg.senderId.firstName,
+      }));
+
+      setChatMessages(messages);
+    } catch (error) {
+      console.error("Error fetching chat messages:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchChatMessages();
+  }, []);
 
   useEffect(() => {
     const socket = getSocket();
     if (socket && socket.connected) {
       socket.emit("joinChat", { userId, targetUserId });
 
-      const handleReceiveMessage = ({ userId: senderId, message: text }) => {
-        setChatMessages((prev) => [...prev, { senderId, text }]);
+      const handleReceiveMessage = ({
+        userId: senderId,
+        message: text,
+        firstName,
+      }) => {
+        setChatMessages((prev) => [...prev, { senderId, text, firstName }]);
       };
 
       socket.on("receiveMessage", handleReceiveMessage);
@@ -40,6 +64,7 @@ const Chat = () => {
       userId,
       targetUserId,
       message,
+      firstName: loggedInUser.firstName,
     });
 
     setMessage("");
@@ -56,6 +81,7 @@ const Chat = () => {
               msg.senderId === userId ? "chat-start" : "chat-end"
             }`}
           >
+            <span className="text-sm">{msg.firstName}</span>
             <div className="chat-bubble chat-bubble-primary">{msg.text}</div>
           </div>
         ))}
