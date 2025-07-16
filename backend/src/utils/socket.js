@@ -16,33 +16,41 @@ const initializeSocket = (server) => {
       socket.join(room);
     });
 
-    socket.on("sendMessage", async ({ userId, targetUserId, message }) => {
-      try {
-        const room = [userId, targetUserId].sort().join("_");
+    socket.on(
+      "sendMessage",
+      async ({ userId, targetUserId, message, firstName }) => {
+        try {
+          const room = [userId, targetUserId].sort().join("_");
 
-        // before emitting save the message to the database
+          // before emitting save the message to the database
 
-        // first check if the chat already exsists or not
-        let chat = await Chat.findOne({
-          participants: { $all: [userId, targetUserId] },
-        });
-
-        if (!chat) {
-          chat = new Chat({
-            participants: [userId, targetUserId],
-            messages: [],
+          // first check if the chat already exsists or not
+          let chat = await Chat.findOne({
+            participants: { $all: [userId, targetUserId] },
           });
+
+          if (!chat) {
+            chat = new Chat({
+              participants: [userId, targetUserId],
+              messages: [],
+            });
+          }
+
+          chat.messages.push({ senderId: userId, text: message });
+
+          await chat.save();
+
+          io.to(room).emit("receiveMessage", {
+            userId,
+            targetUserId,
+            message,
+            firstName,
+          });
+        } catch (error) {
+          console.error("Error sending message:", error);
         }
-
-        chat.messages.push({ senderId: userId, text: message });
-
-        await chat.save();
-
-        io.to(room).emit("receiveMessage", { userId, targetUserId, message });
-      } catch (error) {
-        console.error("Error sending message:", error);
       }
-    });
+    );
 
     socket.on("status", async ({ status, userId }) => {
       try {
