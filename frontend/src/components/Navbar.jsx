@@ -33,8 +33,10 @@ const Navbar = () => {
   return (
     <nav className="navbar bg-base-100 shadow-sm">
       <div className="flex-1">
-        <a className="btn btn-ghost text-3xl">Echo</a>
-        <span>Where developers meet</span>
+        <Link to="/" className="btn btn-ghost text-3xl">
+          Echo
+        </Link>
+        <Link to="/">Where developers meet</Link>
       </div>
       {user && (
         <div className="flex px-4 items-center gap-2">
@@ -48,7 +50,8 @@ const Navbar = () => {
               <div className="w-10 rounded-full">
                 <img
                   alt="Tailwind CSS Navbar component"
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                  // src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                  src={`${user?.photoUrl}`}
                 />
               </div>
             </div>
