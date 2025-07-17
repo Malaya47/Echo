@@ -8,8 +8,8 @@ import { createSocketConnection } from "../utils/socket";
 import { Link } from "react-router";
 
 const Login = () => {
-  const [email, setEmail] = useState("malaya@gmail.com");
-  const [password, setPassword] = useState("Password@123");
+  const [email, setEmail] = useState("sarah.ross@example.com");
+  const [password, setPassword] = useState("TestPass123!");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
