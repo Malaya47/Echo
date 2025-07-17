@@ -4,10 +4,7 @@ const Chat = require("../models/chat");
 const initializeSocket = (server) => {
   const io = socket(server, {
     cors: {
-      origin: [
-        "http://localhost:5173",
-        "https://echo-git-main-malayas-projects-d405c886.vercel.app",
-      ],
+      origin: ["http://localhost:5173", "https://echo-xi-dusky.vercel.app"],
       credentials: true,
     },
   });
