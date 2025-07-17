@@ -8,7 +8,10 @@ const initializeSocket = require("./utils/socket");
 
 app.use(
   cors({
-    origin: "*",
+    origin: [
+      "http://localhost:5173",
+      "https://echo-git-main-malayas-projects-d405c886.vercel.app/",
+    ],
     credentials: true,
   })
 );
