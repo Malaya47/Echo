@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { login } from "../utils/userSlice";
 import { useNavigate } from "react-router";
 import { createSocketConnection } from "../utils/socket";
+import { Link } from "react-router";
 
 const Login = () => {
   const [email, setEmail] = useState("malaya@gmail.com");
@@ -65,6 +66,9 @@ const Login = () => {
           <button onClick={loginHandler} className="btn btn-neutral mt-4">
             Login
           </button>
+          <Link to="/signup" className="btn btn-neutral mt-4">
+            Signup
+          </Link>
         </fieldset>
       </section>
     </div>
