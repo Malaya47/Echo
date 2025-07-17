@@ -14,7 +14,6 @@ const Connections = () => {
       const response = await axios.get(`${BASE_URL}/user/connections`, {
         withCredentials: true,
       });
-
       dispatch(addConnections(response.data.data));
     } catch (error) {
       console.error(error.message);
@@ -25,48 +24,50 @@ const Connections = () => {
     fetchConnections();
   }, []);
 
-  if (!connections) {
-    return <h1>No connections found</h1>;
-  }
-
-  if (connections.length === 0) {
-    return <h1>You have no connections</h1>;
+  if (!connections || connections.length === 0) {
+    return (
+      <div className="text-center mt-20">
+        <h1 className="text-2xl font-semibold">You have no connections.</h1>
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4">
-      <h1 className="text-3xl font-bold text-center mt-10 mb-6">
+    <div className="max-w-5xl mx-auto px-4">
+      <h1 className="text-3xl font-bold text-center mt-10 mb-8">
         Your Connections
       </h1>
-      {connections && connections.length > 0 ? (
-        <div className="grid gap-6">
-          {connections.map((connection) => {
-            const {
-              firstName,
-              lastName,
-              age,
-              gender,
-              photoUrl,
-              about,
-              _id,
-              status,
-            } = connection;
-            return (
-              <div
-                key={_id}
-                className="flex flex-col sm:flex-row items-center bg-white dark:bg-base-300 shadow-lg rounded-2xl p-6 border transition-all hover:scale-[1.01]"
-              >
-                <div className="avatar mb-4 sm:mb-0 sm:mr-6">
-                  <div className="w-24 h-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 overflow-hidden">
-                    <img
-                      src={photoUrl}
-                      alt={`${firstName} ${lastName}`}
-                      className="object-cover w-full h-full"
-                    />
-                  </div>
-                </div>
 
-                <div className="flex flex-col sm:flex-row justify-between w-full items-center sm:items-start gap-4">
+      <div className="grid gap-6">
+        {connections.map((connection) => {
+          const {
+            firstName,
+            lastName,
+            age,
+            gender,
+            photoUrl,
+            about,
+            _id,
+            status,
+          } = connection;
+
+          return (
+            <div
+              key={_id}
+              className="flex flex-col sm:flex-row items-center sm:items-start bg-white dark:bg-base-300 shadow-xl rounded-2xl p-6 border transition-transform hover:scale-[1.01]"
+            >
+              <div className="avatar mb-4 sm:mb-0 sm:mr-6">
+                <div className="w-24 h-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 overflow-hidden">
+                  <img
+                    src={photoUrl}
+                    alt={`${firstName} ${lastName}`}
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col justify-between w-full gap-3">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center w-full">
                   <div className="text-center sm:text-left">
                     <h4 className="text-xl font-semibold text-primary mb-1">
                       {firstName} {lastName}
@@ -78,27 +79,37 @@ const Connections = () => {
                       <span className="px-3 py-1 bg-secondary text-white text-sm rounded-full">
                         {age} years
                       </span>
+                      {status && (
+                        <span
+                          className={`px-3 py-1 text-sm rounded-full ${
+                            status === "online"
+                              ? "bg-green-500 text-white"
+                              : "bg-gray-400 text-white"
+                          }`}
+                        >
+                          {status}
+                        </span>
+                      )}
                     </div>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm">
+                    <p className="text-gray-600 dark:text-gray-300 text-sm max-w-md">
                       {about}
                     </p>
                   </div>
+                </div>
 
+                <div className="flex justify-end mt-4 sm:mt-0">
                   <Link
                     to={`/chat/${_id}`}
-                    className="btn bg-primary text-white self-end sm:self-start"
+                    className="btn btn-primary text-white px-6 py-2 rounded-lg"
                   >
                     Chat
                   </Link>
-                  <p>{status}</p>
                 </div>
               </div>
-            );
-          })}
-        </div>
-      ) : (
-        <p className="text-center text-gray-500 mt-6">No connections found.</p>
-      )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
