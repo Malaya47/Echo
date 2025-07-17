@@ -31,10 +31,9 @@ const Chat = () => {
     }
   };
 
-  window.scrollTo(0, document.body.scrollHeight);
-
   useEffect(() => {
     fetchChatMessages();
+    window.scrollTo(0, document.body.scrollHeight);
   }, []);
 
   useEffect(() => {
@@ -75,6 +74,11 @@ const Chat = () => {
   return (
     <div className="flex flex-col h-screen bg-base-200 p-4">
       {/* Chat messages */}
+      {chatMessages.length === 0 && (
+        <h1 className="text-2xl font-bold text-center mt-10 mb-8">
+          Start a conversation
+        </h1>
+      )}
       <div className="flex-1 overflow-y-auto space-y-2">
         {chatMessages.map((msg, index) => (
           <div
