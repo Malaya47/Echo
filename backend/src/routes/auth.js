@@ -10,6 +10,10 @@ authRouter.post("/signup", async (req, res) => {
     //  Vaidation of data
     validateSignupData(req);
 
+    if (!req.body.photoUrl || req.body.photoUrl.trim() === "") {
+      delete req.body.photoUrl; // or set it to undefined
+    }
+
     const {
       firstName,
       lastName,
