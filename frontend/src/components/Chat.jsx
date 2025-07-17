@@ -31,6 +31,8 @@ const Chat = () => {
     }
   };
 
+  window.scrollTo(0, document.body.scrollHeight);
+
   useEffect(() => {
     fetchChatMessages();
   }, []);
