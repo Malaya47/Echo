@@ -1,6 +1,8 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
+require("dotenv").config();
+
 const userAuth = async (req, res, next) => {
   try {
     // Read the token from the req cookies
@@ -11,7 +13,7 @@ const userAuth = async (req, res, next) => {
       });
     }
 
-    const decodedObj = await jwt.verify(token, "your_secret_key");
+    const decodedObj = await jwt.verify(token, process.env.JWT_SECRET);
 
     const { _id } = decodedObj;
 
