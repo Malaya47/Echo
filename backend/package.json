@@ -6,6 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
+   "build": "node index.js",
     "seed": "node src/seedDatabase.js"
   },
   "author": "",
