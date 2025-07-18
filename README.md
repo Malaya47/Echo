@@ -160,5 +160,5 @@ Use these pre-seeded accounts to test the application:
 
 **Malaya Tiwari**
 - GitHub: [@Malaya47](https://github.com/Malaya47)
-- LinkedIn: [Connect with me](https://linkedin.com/in/malaya-tiwari)
+- LinkedIn: [Connect with me](https://www.linkedin.com/in/malaya-tiwari-84a951189)
 
