@@ -1,4 +1,4 @@
-<p>Project Live Link: -  <a href="echo-xi-dusky.vercel.app">echo-xi-dusky.vercel.app</a></p>
+<p>Project Live Link: -  <a href="https://echo-xi-dusky.vercel.app/">https://echo-xi-dusky.vercel.app/</a></p>
 # Echo 🌟
 
 **A Real-Time Developer Networking Platform**
